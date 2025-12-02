@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Slider</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js"></script>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+h1 {
+  font-size: 20px;
+  line-height: 30px;
+}
+
+h2 {
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: #2dc4b2;
+}
+
+#console {
+  position: absolute;
+  width: 240px;
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: white;
+}
+</style>
+
+</head>
+<body>
+<div id='map'></div>
+<div id='console'>
+  <h1>Motor vehicle collisions</h1>
+  <p>Data: <a href='https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95'>Motor vehicle collision injuries and deaths</a> in NYC, Jan 2016</p>
+
+
+  <div class='session' id='sliderbar'>
+  <h2>Year: <label id='active-hour'>2001</label></h2>
+  <input id='slider' class='row' type='range' min='2001' max='2019' step='1' value='2001' />
+</div>
+</div>
+
+
+
+<script type="text/javascript">
+	mapboxgl.accessToken = 'pk.eyJ1Ijoic2xrb3Nvdm8iLCJhIjoiY2tuc3YwNjNuMTJnNDJ1cXdhazVydDZ2cSJ9.QEeEU3pdlV2hBg245jVTJg';
+
+
+    var arrayOfYear = [
+        {
+            'year' : '2001',
+            'color' : '#FF5733'
+        },
+        {
+            'year' : '2002',
+            'color' : '#F9FF33'
+        },
+        {
+            'year' : '2003',
+            'color' : '#B8FF33'
+        },
+        {
+            'year' : '2004',
+            'color' : '#ABE7E3'
+        },
+        {
+            'year' : '2005',
+            'color' : '#D2E7AB'
+        },
+        {
+            'year' : '2006',
+            'color' : '#00FFEC'
+        },
+        {
+            'year' : '2007',
+            'color' : '#7CD1FE'
+        },
+        {
+            'year' : '2008',
+            'color' : '#F1BBFF'
+        },
+        {
+            'year' : '2009',
+            'color' : '#93AFFF'
+        },
+        {
+            'year' : '2010',
+            'color' : '#B0FC75'
+        },
+        {
+            'year' : '2011',
+            'color' : '#FC3D3D'
+        },
+        {
+            'year' : '2012',
+            'color' : '#F905FD'
+        },
+        {
+            'year' : '2013',
+            'color' : '#F9DEF5'
+        },
+        {
+            'year' : '2014',
+            'color' : '#FA688E'
+        },
+        {
+            'year' : '2015',
+            'color' : '#FFDA85'
+        },
+        {
+            'year' : '2016',
+            'color' : '#7ADFFF'
+        },
+        {
+            'year' : '2017',
+            'color' : '#FFD0EF'
+        },
+        {
+            'year' : '2018',
+            'color' : '#B657F7'
+        },
+        {
+            'year' : '2019',
+            'color' : '#B4B6E4'
+        },
+    ];
+
+var map = new mapboxgl.Map({
+  container: 'map', // container element id
+  style: 'mapbox://styles/mapbox/light-v10',
+  center: [20.6263,42.7749], // initial map center in [lon, lat]
+  zoom: 12
+});
+
+ map.on('load', function () {
+        
+        // for(var i = 0; i < 20; i++ ) {
+
+ map.addSource('2001', {
+                type: 'geojson',
+                // Use a URL for the value for the `data` property.
+                data: 'https://rawcdn.githack.com/SLKosovo/slkosovo.github.io/e7a48a04d93666039a7d0a20def786926970b25f/map/slider/deforestation/LostForest_2001.geojson'
+            });
+
+ map.addLayer({
+                'id': 'layer-2001',
+                'type': 'fill',
+                'source': '2001',
+                'layout': {},
+                'paint': {
+                'fill-color': '#FF5733',
+                'fill-opacity': 1
+                }
+            });
+
+    });
+
+document.getElementById('slider').addEventListener('input', function(e) {
+  var hour = parseInt(e.target.value);
+var yearstring =e.target.value;
+  map.addSource(yearstring, {
+                type: 'geojson',
+                // Use a URL for the value for the `data` property.
+                data: 'https://rawcdn.githack.com/SLKosovo/slkosovo.github.io/e7a48a04d93666039a7d0a20def786926970b25f/map/slider/deforestation/LostForest_'+hour+'.geojson'
+            });
+
+ map.addLayer({
+                'id': 'layer-'+hour,
+                'type': 'fill',
+                'source': yearstring,
+                'layout': {},
+                'paint': {
+                'fill-color': '#000000',
+                'fill-opacity': 1
+                }
+            });
+  // update the map
+  map.setFilter('layer-'+hour, ['==', ['number', ['get', 'Year']], hour]);
+
+  // converting 0-23 hour to AMPM format
+  // var ampm = hour >= 12 ? 'PM' : 'AM';
+  // var hour12 = hour % 12 ? hour % 12 : 12;
+
+  // update text in the UI
+  document.getElementById('active-hour').innerText = hour;
+});
+
+</script>
+
+</body>
