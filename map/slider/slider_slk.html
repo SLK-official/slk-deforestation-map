@@ -60,7 +60,7 @@
     <div id='console'>
         <div class='session' id='sliderbar'>
             <h2>Year: <label id='active-hour'>2001</label></h2>
-            <input id='slider' class='row' type='range' min='2001' max='2019' step='1' value='2001' />
+            <input id='slider' class='row' type='range' min='2001' max='2025' step='1' value='2001' />
         </div>
     </div>
 
@@ -92,7 +92,8 @@
                 'type': 'fill',
                 source: {
                     type: 'geojson',
-                    data: `https://rawcdn.githack.com/SLKosovo/slkosovo.github.io/9d68fc218477d0217277466d74d098472d9c69d5/map/slider/deforestation/merged_slk.geojson`
+                    //data: `https://rawcdn.githack.com/SLKosovo/slkosovo.github.io/9d68fc218477d0217277466d74d098472d9c69d5/map/slider/deforestation/merged_slk.geojson`                    
+                    data: `./deforestation/merged_slk.geojson`                    
                 },
                 'paint': {
                     'fill-color': "#b83735",
