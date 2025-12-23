@@ -2,119 +2,114 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <title>Slider</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js"></script>
+    <meta charset='utf-8' />
+    <title>Display a map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <!-- Mapbox -->
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- Slider -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/11.1.0/nouislider.min.css" />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/11.1.0/nouislider.min.js'></script>
+
+    <!-- Moment.js -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Nunito Sans', Helvetica, Arial, Sans-serif;
-        }
+    body {
+        margin: 0;
+        padding: 0;
+    }
 
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
+    #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
 
-        h1 {
-            font-size: 20px;
-            line-height: 30px;
-        }
+    .slider-control-container {
+        padding: 5px;
+    }
 
-        h2 {
-            font-size: 14px;
-            line-height: 20px;
-            margin-bottom: 10px;
-            color: #2F3E54;
-            text-align: center;
-            font-weight: bold;
-        }
+    .slider-control-range-display {
+        font-size: 18px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        font-weight: 700;
+    }
 
-        a {
-            text-decoration: none;
-            color: #2dc4b2;
-        }
+    /*
 
-        #console {
-            width: 130px;
-            background: linear-gradient(142deg, rgba(53,175,184,1) 0%, rgba(134,207,212,1) 100%);
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            margin-left: -65px;
-            margin-bottom: 1%;
-            padding: 10px 20px;
-        }
+    class to change color
+    .noUi-connect {
+        background: #2980b9;
+    }
 
+    */
     </style>
-
 </head>
 
 <body>
     <div id='map'></div>
-    <div id='console'>
-        <div class='session' id='sliderbar'>
-            <h2>Year: <label id='active-hour'>2001</label></h2>
-            <input id='slider' class='row' type='range' min='2001' max='2024' step='1' value='2001' />
-        </div>
-    </div>
+    <script src="rangeSlider.js"></script>
+    <script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic2xrb3Nvdm8iLCJhIjoiY2tuc3YwNjNuMTJnNDJ1cXdhazVydDZ2cSJ9.QEeEU3pdlV2hBg245jVTJg';
+    var map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: 'mapbox://styles/mapbox/outdoors-v11', // stylesheet location
+        center: [20.45710490014006, 42.59902581127422], // starting position [lng, lat]
+        zoom: 12 // starting zoom
+    });
 
+    // Add zoom and rotation controls to the map.
+    map.addControl(new mapboxgl.NavigationControl());
 
+    // disable map rotation using right click + drag
+    map.dragRotate.disable();
 
-    <script type="text/javascript">
-        mapboxgl.accessToken = 'pk.eyJ1Ijoic2xrb3Nvdm8iLCJhIjoiY2tuc3YwNjNuMTJnNDJ1cXdhazVydDZ2cSJ9.QEeEU3pdlV2hBg245jVTJg';
+    // disable map rotation using touch rotation gesture
+    map.touchZoomRotate.disableRotation();
 
-        var map = new mapboxgl.Map({
-            container: 'map', // container element id
-            style: 'mapbox://styles/mapbox/outdoors-v11',
-            center: [20.45710490014006, 42.59902581127422], // initial map center in [lon, lat]
-            zoom: 12
+    var sliderOptions = {
+        elm: 'slider-control',
+        layer: 'forest_layer',
+        source: 'forest_source',
+        controlWidth: '400px',
+        minProperty: 'year',
+        maxProperty: 'year',
+        sliderMin: 2001,
+        sliderMax: 2024,
+        filterMin: 2001,
+        filterMax: 2024,
+        propertyType: 'integer',
+        rangeDescriptionFormat: 'integer',
+        descriptionPrefix: 'Year:'
+    }
+
+    map.addControl(new RangeSlider(sliderOptions, 'top-right'));
+
+    map.on('load', function () {
+        map.addSource('forest_source', { 
+            type: 'geojson', 
+            data: './deforestation/merged_slk.geojson'
         });
         
-         // Add zoom and rotation controls to the map.
-        map.addControl(new mapboxgl.NavigationControl());
-
-        // disable map rotation using right click + drag
-        map.dragRotate.disable();
-
-        // disable map rotation using touch rotation gesture
-        map.touchZoomRotate.disableRotation();
-
-
-        map.on('load', function() {
-            map.addLayer({
-                'id': `forest_layer`,
-                'type': 'fill',
-                source: {
-                    type: 'geojson',
-                    //data: `https://rawcdn.githack.com/SLKosovo/slkosovo.github.io/9d68fc218477d0217277466d74d098472d9c69d5/map/slider/deforestation/merged_slk.geojson`                    
-                    data: `./deforestation/merged_slk.geojson`                    
-                },
-                'paint': {
-                    'fill-color': "#b83735",
-                    'fill-opacity': 1
-                },
-                'filter': ['==', ['number', ['get', 'year']], 2001]
-            });
-    
-
-            document.getElementById('slider').addEventListener('input', function(e) {
-                var currentYear = parseInt(e.target.value);
-                // update the map
-                map.setFilter(`forest_layer`, ['<=', ['number', ['get', 'year']], currentYear]);
-
-                // update text in the UI
-                document.getElementById('active-hour').innerText = currentYear;
-            });
+        map.addLayer({
+            'id': 'forest_layer',
+            'source': 'forest_source',
+            'type': 'fill',
+            'paint': {
+                'fill-color': '#b83735',
+                'fill-opacity': 1
+            }
         });
+    });
+
+
 
     </script>
-
 </body>
 
 </html>
