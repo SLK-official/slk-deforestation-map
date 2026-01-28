@@ -31,6 +31,8 @@
 
     .slider-control-container {
         padding: 5px;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .slider-control-range-display {
@@ -129,6 +131,25 @@
         margin-top: 5px;
         font-weight: 600;
     }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+        .mapboxgl-ctrl-bottom-left {
+            bottom: 10px;
+            left: 50%;
+            right: auto;
+            width: calc(100% - 30px);
+            max-width: 400px;
+        }
+        
+        .slider-control-range-display {
+            font-size: 14px;
+        }
+        
+        .slider-year-labels {
+            font-size: 10px;
+        }
+    }
     </style>
 </head>
 
@@ -202,7 +223,7 @@
         elm: 'slider-control',
         layer: 'forest_layer',
         source: 'forest_source',
-        controlWidth: '400px',
+        controlWidth: 'min(400px, calc(100vw - 40px))',
         minProperty: 'year',
         maxProperty: 'year',
         sliderMin: 2001,
