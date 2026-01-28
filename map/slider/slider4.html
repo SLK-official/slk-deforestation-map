@@ -81,6 +81,51 @@
     // disable map rotation using touch rotation gesture
     map.touchZoomRotate.disableRotation();
 
+     // Color palette function - generates distinct colors for each year
+     function getYearColor(year) {
+            // Red gradient from light (2001) to dark (2024)
+            const colors = {
+                2001: '#FFE5E5',  // Very light red
+                2002: '#FFCCCC',  // Light red
+                2003: '#FFB3B3',  // Light red
+                2004: '#FF9999',  // Light-medium red
+                2005: '#FF8080',  // Light-medium red
+                2006: '#FF6666',  // Medium-light red
+                2007: '#FF4D4D',  // Medium-light red
+                2008: '#FF3333',  // Medium red
+                2009: '#FF1A1A',  // Medium red
+                2010: '#FF0000',  // Red
+                2011: '#E60000',  // Medium-dark red
+                2012: '#CC0000',  // Medium-dark red
+                2013: '#B30000',  // Dark red
+                2014: '#990000',  // Dark red
+                2015: '#800000',  // Dark red
+                2016: '#660000',  // Very dark red
+                2017: '#4D0000',  // Very dark red
+                2018: '#330000',  // Very dark red
+                2019: '#1A0000',  // Almost black red
+                2020: '#8B0000',  // Dark red (maroon)
+                2021: '#7A0000',  // Darker maroon
+                2022: '#660000',  // Very dark red
+                2023: '#4D0000',  // Very dark red
+                2024: '#330000'   // Darkest red (almost black)
+            };
+            
+            return colors[year] || '#b83735'; // Default color if year not found
+        }
+    // Create color expression for Mapbox
+    function createColorExpression() {
+            // Build a case expression that maps each year to its color
+            const cases = [];
+            for (let year = 2001; year <= 2024; year++) {
+                cases.push(['==', ['number', ['get', 'year']], year]);
+                cases.push(getYearColor(year));
+            }
+            cases.push('#b83735'); // Default color
+            
+            return ['case', ...cases];
+        }
+
     var sliderOptions = {
         elm: 'slider-control',
         layer: 'forest_layer',
@@ -110,7 +155,7 @@
             'source': 'forest_source',
             'type': 'fill',
             'paint': {
-                'fill-color': '#b83735',
+                'fill-color': createColorExpression(),
                 'fill-opacity': 1
             }
         });
