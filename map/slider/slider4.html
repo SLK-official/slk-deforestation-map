@@ -101,6 +101,29 @@
         margin-top: 5px;
         font-weight: 600;
     }
+
+    /* Overlays to dim colors outside selected range */
+    .slider-overlay {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.75);
+        pointer-events: none;
+        z-index: 1;
+    }
+    .slider-overlay-left {
+        left: 0;
+        border-radius: 4px 0 0 4px;
+    }
+    .slider-overlay-right {
+        right: 0;
+        border-radius: 0 4px 4px 0;
+    }
+
+    /* Ensure slider container has relative positioning */
+    #slider-control.noUi-target {
+        position: relative;
+    }
     </style>
 </head>
 
@@ -201,6 +224,48 @@
         }
     }
 
+    // Add overlays to dim colors outside selected range
+    function setupSliderOverlays() {
+        const sliderElement = document.getElementById('slider-control');
+        if (!sliderElement || !sliderElement.noUiSlider) {
+            setTimeout(setupSliderOverlays, 100);
+            return;
+        }
+
+        // Create overlay elements
+        const leftOverlay = document.createElement('div');
+        leftOverlay.className = 'slider-overlay slider-overlay-left';
+        const rightOverlay = document.createElement('div');
+        rightOverlay.className = 'slider-overlay slider-overlay-right';
+
+        sliderElement.appendChild(leftOverlay);
+        sliderElement.appendChild(rightOverlay);
+
+        // Update overlays based on slider values
+        function updateOverlays() {
+            const values = sliderElement.noUiSlider.get();
+            const minVal = parseFloat(values[0]);
+            const maxVal = parseFloat(values[1]);
+            
+            // Calculate percentages (2001-2024 range = 23 years)
+            const sliderMin = 2001;
+            const sliderMax = 2024;
+            const range = sliderMax - sliderMin;
+            
+            const leftPercent = ((minVal - sliderMin) / range) * 100;
+            const rightPercent = ((sliderMax - maxVal) / range) * 100;
+
+            leftOverlay.style.width = leftPercent + '%';
+            rightOverlay.style.width = rightPercent + '%';
+        }
+
+        // Initial update
+        updateOverlays();
+
+        // Update on slider change
+        sliderElement.noUiSlider.on('update', updateOverlays);
+    }
+
     map.on('load', function () {
         map.addSource('forest_source', { 
             type: 'geojson', 
@@ -219,6 +284,9 @@
 
         // Add year labels after slider is ready
         addSliderYearLabels();
+        
+        // Setup overlays to dim colors outside range
+        setupSliderOverlays();
     });
 
 
