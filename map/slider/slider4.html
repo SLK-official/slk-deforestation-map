@@ -79,6 +79,7 @@
         border: none !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
         height: 14px !important;
+        position: relative;
     }
 
     #slider-control .noUi-connect,
@@ -86,23 +87,7 @@
         background: transparent !important;
     }
 
-    #slider-control .noUi-handle {
-        border: 2px solid #333 !important;
-        background: #fff !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
-    }
-
-    /* Year labels under slider */
-    .slider-year-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: 11px;
-        color: #333;
-        margin-top: 5px;
-        font-weight: 600;
-    }
-
-    /* Overlays to dim colors outside selected range */
+    /* Overlays to dim colors outside selected range - defined BEFORE controls */
     .slider-overlay {
         position: absolute;
         top: 0;
@@ -120,9 +105,25 @@
         border-radius: 0 4px 4px 0;
     }
 
-    /* Ensure slider container has relative positioning */
-    #slider-control.noUi-target {
-        position: relative;
+    /* Controls - defined AFTER overlays to appear on top */
+    #slider-control .noUi-origin {
+        z-index: 2 !important;
+    }
+
+    #slider-control .noUi-handle {
+        border: 1px solid #333 !important;
+        background: #fff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
+
+    /* Year labels under slider */
+    .slider-year-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #333;
+        margin-top: 5px;
+        font-weight: 600;
     }
     </style>
 </head>
