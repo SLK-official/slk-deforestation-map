@@ -239,8 +239,10 @@
         const rightOverlay = document.createElement('div');
         rightOverlay.className = 'slider-overlay slider-overlay-right';
 
-        sliderElement.appendChild(leftOverlay);
-        sliderElement.appendChild(rightOverlay);
+        // Append to .noUi-base to be in same stacking context as handles
+        const noUiBase = sliderElement.querySelector('.noUi-base');
+        noUiBase.appendChild(leftOverlay);
+        noUiBase.appendChild(rightOverlay);
 
         // Update overlays based on slider values
         function updateOverlays() {
