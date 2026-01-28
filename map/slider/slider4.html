@@ -49,14 +49,58 @@
         bottom: 20px;
     }
 
-    /*
-
-    class to change color
-    .noUi-connect {
-        background: #2980b9;
+    /* Slider bar gradient legend */
+    #slider-control.noUi-target,
+    #slider-control.noUi-target .noUi-base {
+        background: linear-gradient(to right,
+            #FFE5E5 0%,      /* 2001 */
+            #FFCCCC 4.35%,   /* 2002 */
+            #FFB3B3 8.7%,    /* 2003 */
+            #FF9999 13.04%,  /* 2004 */
+            #FF8080 17.39%,  /* 2005 */
+            #FF6666 21.74%,  /* 2006 */
+            #FF4D4D 26.09%,  /* 2007 */
+            #FF3333 30.43%,  /* 2008 */
+            #FF1A1A 34.78%,  /* 2009 */
+            #FF0000 39.13%,  /* 2010 */
+            #E60000 43.48%,  /* 2011 */
+            #CC0000 47.83%,  /* 2012 */
+            #B30000 52.17%,  /* 2013 */
+            #990000 56.52%,  /* 2014 */
+            #800000 60.87%,  /* 2015 */
+            #660000 65.22%,  /* 2016 */
+            #4D0000 69.57%,  /* 2017 */
+            #330000 73.91%,  /* 2018 */
+            #1A0000 78.26%,  /* 2019 */
+            #660000 86.96%,  /* 2022 */
+            #4D0000 91.3%,   /* 2023 */
+            #330000 100%     /* 2024 */
+        ) !important;
+        border: none !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+        height: 14px !important;
     }
 
-    */
+    #slider-control .noUi-connect,
+    #slider-control .noUi-connects {
+        background: transparent !important;
+    }
+
+    #slider-control .noUi-handle {
+        border: 2px solid #333 !important;
+        background: #fff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
+
+    /* Year labels under slider */
+    .slider-year-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #333;
+        margin-top: 5px;
+        font-weight: 600;
+    }
     </style>
 </head>
 
@@ -144,6 +188,19 @@
 
     map.addControl(new RangeSlider(sliderOptions, 'bottom-left'));
 
+    // Add year labels under the slider
+    function addSliderYearLabels() {
+        const sliderElement = document.getElementById('slider-control');
+        if (sliderElement) {
+            const labelsDiv = document.createElement('div');
+            labelsDiv.className = 'slider-year-labels';
+            labelsDiv.innerHTML = '<span>2001</span><span>2024</span>';
+            sliderElement.parentNode.insertBefore(labelsDiv, sliderElement.nextSibling);
+        } else {
+            setTimeout(addSliderYearLabels, 100);
+        }
+    }
+
     map.on('load', function () {
         map.addSource('forest_source', { 
             type: 'geojson', 
@@ -159,6 +216,9 @@
                 'fill-opacity': 1
             }
         });
+
+        // Add year labels after slider is ready
+        addSliderYearLabels();
     });
 
 
