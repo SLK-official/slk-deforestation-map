@@ -17,6 +17,37 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
 
     <style>
+    /* ============================================
+       COLOR PALETTE - Define all year colors here
+       ============================================ */
+    :root {
+        --color-2001: #FFE5E5;  /* Very light red */
+        --color-2002: #FFCCCC;  /* Light red */
+        --color-2003: #FFB3B3;  /* Light red */
+        --color-2004: #FF9999;  /* Light-medium red */
+        --color-2005: #FF8080;  /* Light-medium red */
+        --color-2006: #FF6666;  /* Medium-light red */
+        --color-2007: #FF4D4D;  /* Medium-light red */
+        --color-2008: #FF3333;  /* Medium red */
+        --color-2009: #FF1A1A;  /* Medium red */
+        --color-2010: #FF0000;  /* Red */
+        --color-2011: #E60000;  /* Medium-dark red */
+        --color-2012: #CC0000;  /* Medium-dark red */
+        --color-2013: #B30000;  /* Dark red */
+        --color-2014: #990000;  /* Dark red */
+        --color-2015: #800000;  /* Dark red */
+        --color-2016: #660000;  /* Very dark red */
+        --color-2017: #4D0000;  /* Very dark red */
+        --color-2018: #330000;  /* Very dark red */
+        --color-2019: #1A0000;  /* Almost black red */
+        --color-2020: #140000;  /* Darker */
+        --color-2021: #0F0000;  /* Darker */
+        --color-2022: #0A0000;  /* Very dark */
+        --color-2023: #050000;  /* Near black */
+        --color-2024: #030000;  /* Darkest (almost black) */
+        --color-default: #b83735;
+    }
+
     body {
         margin: 0;
         padding: 0;
@@ -30,7 +61,7 @@
     }
 
     .slider-control-container {
-        padding: 5px;
+        padding: 5px;       
         max-width: 100%;
         box-sizing: border-box;
     }
@@ -51,35 +82,9 @@
         bottom: 20px;
     }
 
-    /* Slider bar gradient legend */
+    /* Slider bar gradient legend - gradient set dynamically via JS */
     #slider-control.noUi-target,
     #slider-control.noUi-target .noUi-base {
-        background: linear-gradient(to right,
-            #FFE5E5 0%,      /* 2001 */
-            #FFCCCC 4.35%,   /* 2002 */
-            #FFB3B3 8.7%,    /* 2003 */
-            #FF9999 13.04%,  /* 2004 */
-            #FF8080 17.39%,  /* 2005 */
-            #FF6666 21.74%,  /* 2006 */
-            #FF4D4D 26.09%,  /* 2007 */
-            #FF3333 30.43%,  /* 2008 */
-            #FF1A1A 34.78%,  /* 2009 */
-            #FF0000 39.13%,  /* 2010 */
-            #E60000 43.48%,  /* 2011 */
-            #CC0000 47.83%,  /* 2012 */
-            #B30000 52.17%,  /* 2013 */
-            #990000 56.52%,  /* 2014 */
-            #800000 60.87%,  /* 2015 */
-            #660000 65.22%,  /* 2016 */
-            #4D0000 69.57%,  /* 2017 */
-            #330000 73.91%,  /* 2018 */
-            #1A0000 78.26%,  /* 2019 */
-            #140000 82.61%,  /* 2020 */
-            #0F0000 86.96%,  /* 2021 */
-            #0A0000 91.30%,  /* 2022 */
-            #050000 95.65%,  /* 2023 */
-            #030000 100%     /* 2024 */
-        ) !important;
         border: none !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
         height: 14px !important;
@@ -174,50 +179,60 @@
     // disable map rotation using touch rotation gesture
     map.touchZoomRotate.disableRotation();
 
-     // Color palette function - generates distinct colors for each year
-     function getYearColor(year) {
-            // Red gradient from light (2001) to dark (2024)
-            const colors = {
-                2001: '#FFE5E5',  // Very light red
-                2002: '#FFCCCC',  // Light red
-                2003: '#FFB3B3',  // Light red
-                2004: '#FF9999',  // Light-medium red
-                2005: '#FF8080',  // Light-medium red
-                2006: '#FF6666',  // Medium-light red
-                2007: '#FF4D4D',  // Medium-light red
-                2008: '#FF3333',  // Medium red
-                2009: '#FF1A1A',  // Medium red
-                2010: '#FF0000',  // Red
-                2011: '#E60000',  // Medium-dark red
-                2012: '#CC0000',  // Medium-dark red
-                2013: '#B30000',  // Dark red
-                2014: '#990000',  // Dark red
-                2015: '#800000',  // Dark red
-                2016: '#660000',  // Very dark red
-                2017: '#4D0000',  // Very dark red
-                2018: '#330000',  // Very dark red
-                2019: '#1A0000',  // Almost black red
-                2020: '#140000',  // Darker
-                2021: '#0F0000',  // Darker
-                2022: '#0A0000',  // Very dark
-                2023: '#050000',  // Near black
-                2024: '#030000'   // Darkest (almost black)
-            };
-            
-            return colors[year] || '#b83735'; // Default color if year not found
+    // Year range configuration
+    const MIN_YEAR = 2001;
+    const MAX_YEAR = 2024;
+
+    // Get CSS custom property value
+    function getCSSColor(varName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    }
+
+    // Get color for a specific year (reads from CSS variables)
+    function getYearColor(year) {
+        const color = getCSSColor(`--color-${year}`);
+        return color || getCSSColor('--color-default');
+    }
+
+    // Generate CSS gradient string from CSS variables
+    function generateGradientCSS() {
+        const range = MAX_YEAR - MIN_YEAR;
+        const stops = [];
+
+        for (let year = MIN_YEAR; year <= MAX_YEAR; year++) {
+            const percent = ((year - MIN_YEAR) / range) * 100;
+            stops.push(`${getYearColor(year)} ${percent.toFixed(2)}%`);
         }
+
+        return `linear-gradient(to right, ${stops.join(', ')})`;
+    }
+
+    // Apply gradient to slider element
+    function applySliderGradient() {
+        const sliderElement = document.getElementById('slider-control');
+        if (!sliderElement) {
+            setTimeout(applySliderGradient, 100);
+            return;
+        }
+        const gradient = generateGradientCSS();
+        sliderElement.style.background = gradient;
+        const noUiBase = sliderElement.querySelector('.noUi-base');
+        if (noUiBase) {
+            noUiBase.style.background = gradient;
+        }
+    }
     // Create color expression for Mapbox
     function createColorExpression() {
-            // Build a case expression that maps each year to its color
-            const cases = [];
-            for (let year = 2001; year <= 2024; year++) {
-                cases.push(['==', ['number', ['get', 'year']], year]);
-                cases.push(getYearColor(year));
-            }
-            cases.push('#b83735'); // Default color
-            
-            return ['case', ...cases];
+        // Build a case expression that maps each year to its color
+        const cases = [];
+        for (let year = MIN_YEAR; year <= MAX_YEAR; year++) {
+            cases.push(['==', ['number', ['get', 'year']], year]);
+            cases.push(getYearColor(year));
         }
+        cases.push(getCSSColor('--color-default'));
+        
+        return ['case', ...cases];
+    }
 
     var sliderOptions = {
         elm: 'slider-control',
@@ -309,6 +324,9 @@
                 'fill-opacity': 1
             }
         });
+
+        // Apply gradient from centralized color palette
+        applySliderGradient();
 
         // Add year labels after slider is ready
         addSliderYearLabels();
